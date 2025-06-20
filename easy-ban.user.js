@@ -37,6 +37,51 @@ const CSS = `
 }
 `;
 
+const JS = `
+const EASYBAN = {
+  showError: function(message) {
+    const element = document.getElementById('easy-ban-userscript-error');
+    if (element === null) {
+      throw new Error('Could not find error element when trying to set error: ' + message);
+    }
+
+    element.innerText = message;
+    throw new Error(message);
+  },
+
+  showSuccess: function(message) {
+    const win = new OZONE.dialogs.SuccessBox();
+    win.content = message;
+    win.show();
+  },
+
+  runRevoke: function(userId) {
+    // TODO
+  },
+
+  runBan: function(userId) {
+    const reasonElement = document.getElementById('easy-ban-userscript-ban-reason');
+    if (reasonElement === null) {
+      throw new Error('Cannot find ban reason element');
+    }
+
+    const reason = reasonElement.value;
+    if (!reason.trim()) {
+      // Require a ban reason
+      EASYBAN.showError('No ban reason provided');
+    }
+
+    const params = {
+      action: 'ManageSiteBlockAction',
+      event: 'blockUser',
+      userId,
+      reason,
+    };
+    OZONE.ajax.requestModule(null, params, () => EASYBAN.showSuccess('Ban added'));
+  },
+};
+`;
+
 function getUserId() {
   const element = document.querySelector('a.btn.btn-default.btn-xs');
   if (element === null) {
@@ -52,58 +97,20 @@ function getUserId() {
   return matches[1];
 }
 
-function showError(message) {
-  const element = document.getElementById('easy-ban-userscript-error');
-  if (element === null) {
-    throw new Error(`Could not find error element when trying to set error: ${message}`);
-  }
-
-  element.innerText = message;
-  throw new Error(message);
-}
-
-function showSuccess(message) {
-  const win = new OZONE.dialogs.SuccessBox();
-  win.content = message;
-  win.show();
-}
-
-function runRevoke(userId) {
-  // TODO
-}
-
-function runBan(userId) {
-  const reasonElement = document.getElementById('easy-ban-userscript-ban-reason');
-  if (reasonElement === null) {
-    throw new Error('Cannot find ban reason element');
-  }
-
-  const reason = reasonElement.value;
-  if (!reason.trim()) {
-    // Require a ban reason
-    showError('No ban reason provided');
-  }
-
-  const params = {
-    action: 'ManageSiteBlockAction',
-    event: 'blockUser',
-    userId,
-    reason,
-  };
-  OZONE.ajax.requestModule(null, params, () => showSuccess('Ban added'));
-}
-
 function setup() {
   // Fetch current user ID
   const userId = getUserId();
 
   // Add styling
   const styleSheet = document.createElement('style');
-  styleSheet.innerText = CSS;
+  styleSheet.innerHTML = CSS;
   document.head.appendChild(styleSheet);
 
   // Add scripts
-  // TODO
+  const scriptBlock = document.createElement('script');
+  scriptBlock.type = 'text/javascript';
+  scriptBlock.innerHTML = JS;
+  document.body.appendChild(scriptBlock);
 
   // Build UI
   const fieldset = document.createElement('fieldset');
@@ -113,12 +120,12 @@ function setup() {
   legend.innerText = 'Moderation';
 
   const revokeButton = document.createElement('button');
-  revokeButton.addEventListener('click', () => runRevoke(userId));
   revokeButton.innerText = 'Revoke';
+  revokeButton.setAttribute('onclick', `EASYBAN.runRevoke(${userId})`);
 
   const banButton = document.createElement('button');
-  banButton.addEventListener('click', () => runBan(userId));
   banButton.innerText = 'Ban';
+  banButton.setAttribute('onclick', `EASYBAN.runBan(${userId})`);
 
   const banReasonContainer = document.createElement('div');
   const banReason = document.createElement('input');
