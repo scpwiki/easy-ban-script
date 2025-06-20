@@ -58,6 +58,15 @@ const CSS = `
 
 const JS = `
 const EASYBAN = {
+  escapeHtml: function escapeHtml(text) {
+    return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  },
+
   showError: function(message) {
     const element = document.getElementById('easy-ban-userscript-error');
     if (element === null) {
@@ -71,6 +80,21 @@ const EASYBAN = {
   showSuccess: function(message) {
     const win = new OZONE.dialogs.SuccessBox();
     win.content = message;
+    win.show();
+  },
+
+  showConfirm: function(actionName, content, actionName, callback) {
+    const win = new OZONE.dialogs.ConfirmationDialog();
+    win.content = content;
+    win.buttons = [actionName, 'Cancel'];
+    win.addButtonListener('Cancel', win.close);
+    win.addButtonListener(actionName, () => {
+      try {
+        callback();
+      } finally {
+        win.close();
+      }
+    });
     win.show();
   },
 
@@ -90,13 +114,19 @@ const EASYBAN = {
       EASYBAN.showError('No ban reason provided');
     }
 
-    const params = {
-      action: 'ManageSiteBlockAction',
-      event: 'blockUser',
-      userId,
-      reason,
-    };
-    OZONE.ajax.requestModule(null, params, () => EASYBAN.showSuccess('Ban added'));
+    EASYBAN.showConfirm(
+      'Apply Ban',
+      'Are you sure you want to ban the user <strong>' + username + '</strong> (user ID ' + userId + ') with reason:<br><code>' + EASYBAN.escapeHtml(reason) + '</code>',
+      () => {
+        const params = {
+          action: 'ManageSiteBlockAction',
+          event: 'blockUser',
+          userId,
+          reason,
+        };
+        OZONE.ajax.requestModule(null, params, () => EASYBAN.showSuccess('Ban added'));
+      },
+    );
   },
 };
 `;
