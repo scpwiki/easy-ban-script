@@ -32,8 +32,8 @@ const CSS = `
 }
 
 #easy-ban-userscript-ban-reason {
-  margin-top: 0.25em;
-  width: 80%;
+  margin-left: 0.25em;
+  width: 70%;
 }
 
 #easy-ban-userscript button {
@@ -83,18 +83,12 @@ const EASYBAN = {
     win.show();
   },
 
-  showConfirm: function(actionName, content, actionName, callback) {
+  showConfirm: function(actionName, content, callback) {
     const win = new OZONE.dialogs.ConfirmationDialog();
     win.content = content;
     win.buttons = [actionName, 'Cancel'];
     win.addButtonListener('Cancel', win.close);
-    win.addButtonListener(actionName, () => {
-      try {
-        callback();
-      } finally {
-        win.close();
-      }
-    });
+    win.addButtonListener(actionName, callback);
     win.show();
   },
 
@@ -113,6 +107,9 @@ const EASYBAN = {
       // Require a ban reason
       EASYBAN.showError('No ban reason provided');
     }
+
+    const usernameElement = document.querySelector('h1.profile-title');
+    const username = usernameElement.innerText.trim();
 
     EASYBAN.showConfirm(
       'Apply Ban',
@@ -203,14 +200,12 @@ function setup() {
   banButton.innerText = 'Ban';
   banButton.setAttribute('onclick', `EASYBAN.runBan(${userId})`);
 
-  const banReasonContainer = document.createElement('div');
   const banReason = document.createElement('input');
   banReason.id = 'easy-ban-userscript-ban-reason';
   banReason.classList.add('can-lock');
   banReason.disabled = true;
   banReason.type = 'text';
   banReason.placeholder = 'Ban reason (required)';
-  banReasonContainer.appendChild(banReason);
 
   const errorText = document.createElement('div');
   errorText.id = 'easy-ban-userscript-error';
@@ -220,7 +215,7 @@ function setup() {
   fieldset.appendChild(lockContainer);
   fieldset.appendChild(revokeButton);
   fieldset.appendChild(banButton);
-  fieldset.appendChild(banReasonContainer);
+  fieldset.appendChild(banReason);
   fieldset.appendChild(errorText);
 
   const parent = document.querySelector('.col-md-9');
