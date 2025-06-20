@@ -35,6 +35,25 @@ const CSS = `
   margin-top: 0.25em;
   width: 80%;
 }
+
+#easy-ban-userscript button {
+  display: inline-block;
+  padding: 5px 10px 5px 10px;
+  text-align: center;
+  color: #ffffff;
+  background-color: #d9534f;
+  border-color: #d43f3a;
+}
+
+#easy-ban-userscript button:disabled {
+  filter: grayscale(1);
+}
+
+#easy-ban-userscript .danger-zone {
+  border: 1px darkred solid;
+  padding: 0.75em;
+  margin: 0.5em;
+}
 `;
 
 const JS = `
@@ -97,6 +116,16 @@ function getUserId() {
   return matches[1];
 }
 
+function toggleDangerZone() {
+  const checkbox = document.getElementById('easy-ban-userscript-lock');
+  const disabled = checkbox.checked;
+
+  const elements = document.querySelectorAll('#easy-ban-userscript .can-lock');
+  for (let i = 0; i < elements.length; i++) {
+    elements[i].disabled = disabled;
+  }
+}
+
 function setup() {
   // Fetch current user ID
   const userId = getUserId();
@@ -119,17 +148,36 @@ function setup() {
   const legend = document.createElement('legend');
   legend.innerText = 'Moderation';
 
+  const lockContainer = document.createElement('div');
+  lockContainer.classList.add('danger-zone');
+  const lockCheckbox = document.createElement('input');
+  lockCheckbox.id = 'easy-ban-userscript-lock';
+  lockCheckbox.type = 'checkbox';
+  lockCheckbox.checked = true;
+  lockContainer.addEventListener('click', () => toggleDangerZone());
+  lockContainer.appendChild(lockCheckbox);
+  const lockLabel = document.createElement('label');
+  lockLabel.for = 'easy-ban-userscript-lock';
+  lockLabel.innerText = 'Lock Danger Zone';
+  lockContainer.appendChild(lockLabel);
+
   const revokeButton = document.createElement('button');
+  revokeButton.classList.add('can-lock');
+  revokeButton.disabled = true;
   revokeButton.innerText = 'Revoke';
   revokeButton.setAttribute('onclick', `EASYBAN.runRevoke(${userId})`);
 
   const banButton = document.createElement('button');
+  banButton.classList.add('can-lock');
+  banButton.disabled = true;
   banButton.innerText = 'Ban';
   banButton.setAttribute('onclick', `EASYBAN.runBan(${userId})`);
 
   const banReasonContainer = document.createElement('div');
   const banReason = document.createElement('input');
   banReason.id = 'easy-ban-userscript-ban-reason';
+  banReason.classList.add('can-lock');
+  banReason.disabled = true;
   banReason.type = 'text';
   banReason.placeholder = 'Ban reason (required)';
   banReasonContainer.appendChild(banReason);
@@ -139,6 +187,7 @@ function setup() {
   errorText.classList.add('error-text');
 
   fieldset.appendChild(legend);
+  fieldset.appendChild(lockContainer);
   fieldset.appendChild(revokeButton);
   fieldset.appendChild(banButton);
   fieldset.appendChild(banReasonContainer);
