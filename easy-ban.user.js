@@ -105,12 +105,7 @@ const EASYBAN = {
       'Revoke Membership',
       'Are you sure you want to 👢 <strong>revoke</strong> the user <strong>' + username + '</strong> (user ID ' + userId + ') and remove them from the site?',
       () => {
-        const params = {
-          action: 'ManageSiteMembershipAction',
-          event: 'removeMember',
-          user_id: userId,
-        };
-        OZONE.ajax.requestModule(null, params, () => EASYBAN.showSuccess('Member removed'));
+        EASYBAN.runRevokeInner(userId);
         EASYBAN.showError('');
       },
     );
@@ -133,16 +128,33 @@ const EASYBAN = {
       'Apply Ban',
       'Are you sure you want to ❌ <strong>ban</strong> the user <strong>' + username + '</strong> (user ID ' + userId + ') with reason:<br><code>' + EASYBAN.escapeHtml(reason) + '</code>',
       () => {
-        const params = {
-          action: 'ManageSiteBlockAction',
-          event: 'blockUser',
-          userId,
-          reason,
-        };
-        OZONE.ajax.requestModule(null, params, () => EASYBAN.showSuccess('Ban added'));
+        EASYBAN.runBanInner(userId, reason);
         EASYBAN.showError('');
       },
     );
+  },
+
+  runRevokeInner: function(userId) {
+    const params = {
+      action: 'ManageSiteMembershipAction',
+      event: 'removeMember',
+      user_id: userId,
+    };
+    OZONE.ajax.requestModule(null, params, () => EASYBAN.showSuccess('Member removed'));
+  },
+
+  runBanInner: function(userId, reason) {
+    // first, revoke so we don't get "user is still a member of the site" errors
+    EASYBAN.runRevokeInner(userId);
+
+    // then, add the actual ban
+    const params = {
+      action: 'ManageSiteBlockAction',
+      event: 'blockUser',
+      userId,
+      reason,
+    };
+    OZONE.ajax.requestModule(null, params, () => EASYBAN.showSuccess('Ban added'));
   },
 };
 `;
