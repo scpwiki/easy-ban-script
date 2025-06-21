@@ -93,7 +93,17 @@ const EASYBAN = {
   },
 
   runRevoke: function(userId) {
-    // TODO
+    EASYBAN.showConfirm(
+      'Revoke Membership',
+      'Are you sure you want to revoke the user <strong>' + username + '</strong> (user ID ' + userId + ') and remove them from the site?',
+      () => {
+        const params = {
+          action: 'ManageSiteMembershipAction',
+          event: 'removeMember',
+          user_id: userId,
+        };
+        OZONE.ajax.requestModule(null, params, () => EASYBAN.showSuccess('Member removed'));
+      },
   },
 
   runBan: function(userId) {
