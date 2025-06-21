@@ -80,6 +80,7 @@ const EASYBAN = {
   },
 
   showSuccess: function(message) {
+    EASYBAN.showError(''); // clear error
     const win = new OZONE.dialogs.SuccessBox();
     win.content = message;
     win.show();
@@ -104,9 +105,9 @@ const EASYBAN = {
     EASYBAN.showConfirm(
       'Revoke Membership',
       'Are you sure you want to 👢 <strong>revoke</strong> the user <strong>' + username + '</strong> (user ID ' + userId + ') and remove them from the site?',
-      () => {
-        EASYBAN.runRevokeInner(userId);
-        EASYBAN.showError('');
+      async () => {
+        await EASYBAN.runRevokeInner(userId);
+        EASYBAN.showSuccess('Member removed')
       },
     );
   },
@@ -127,35 +128,38 @@ const EASYBAN = {
     EASYBAN.showConfirm(
       'Apply Ban',
       'Are you sure you want to ❌ <strong>ban</strong> the user <strong>' + username + '</strong> (user ID ' + userId + ') with reason:<br><code>' + EASYBAN.escapeHtml(reason) + '</code>',
-      () => {
-        EASYBAN.runBanInner(userId, reason);
-        EASYBAN.showError('');
-        reasonElement.value = '';
+      async () => {
+        await EASYBAN.runBanInner(userId, reason);
+        EASYBAN.showSuccess('Ban added');
       },
     );
   },
 
   runRevokeInner: function(userId) {
-    const params = {
-      action: 'ManageSiteMembershipAction',
-      event: 'removeMember',
-      user_id: userId,
-    };
-    OZONE.ajax.requestModule(null, params, () => EASYBAN.showSuccess('Member removed'));
+    return new Promise((resolve) => {
+      const params = {
+        action: 'ManageSiteMembershipAction',
+        event: 'removeMember',
+        user_id: userId,
+      };
+      OZONE.ajax.requestModule(null, params, resolve);
+    });
   },
 
-  runBanInner: function(userId, reason) {
-    // first, revoke so we don't get "user is still a member of the site" errors
-    EASYBAN.runRevokeInner(userId);
+  runBanInner: async function(userId, reason) {
+    // First, revoke so we don't get "user is still a member of the site" errors
+    await EASYBAN.runRevokeInner(userId);
 
-    // then, add the actual ban
-    const params = {
-      action: 'ManageSiteBlockAction',
-      event: 'blockUser',
-      userId,
-      reason,
-    };
-    OZONE.ajax.requestModule(null, params, () => EASYBAN.showSuccess('Ban added'));
+    // Then, add the actual ban
+    return new Promise((resolve) => {
+      const params = {
+        action: 'ManageSiteBlockAction',
+        event: 'blockUser',
+        userId,
+        reason,
+      };
+      OZONE.ajax.requestModule(null, params, resolve);
+    });
   },
 };
 `;
@@ -223,13 +227,13 @@ function setup() {
   const revokeButton = document.createElement('button');
   revokeButton.classList.add('can-lock');
   revokeButton.disabled = true;
-  revokeButton.innerText = 'Revoke';
+  revokeButton.innerText = '👢 Revoke';
   revokeButton.setAttribute('onclick', `EASYBAN.runRevoke(${userId})`);
 
   const banButton = document.createElement('button');
   banButton.classList.add('can-lock');
   banButton.disabled = true;
-  banButton.innerText = 'Ban';
+  banButton.innerText = '❌ Ban';
   banButton.setAttribute('onclick', `EASYBAN.runBan(${userId})`);
 
   const banReason = document.createElement('input');
