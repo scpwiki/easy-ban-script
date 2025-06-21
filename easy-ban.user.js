@@ -74,7 +74,9 @@ const EASYBAN = {
     }
 
     element.innerText = message;
-    throw new Error(message);
+    if (message) {
+      throw new Error(message);
+    }
   },
 
   showSuccess: function(message) {
@@ -109,6 +111,7 @@ const EASYBAN = {
           user_id: userId,
         };
         OZONE.ajax.requestModule(null, params, () => EASYBAN.showSuccess('Member removed'));
+        EASYBAN.showError('');
       },
     );
   },
@@ -137,6 +140,7 @@ const EASYBAN = {
           reason,
         };
         OZONE.ajax.requestModule(null, params, () => EASYBAN.showSuccess('Ban added'));
+        EASYBAN.showError('');
       },
     );
   },
