@@ -104,6 +104,7 @@ const EASYBAN = {
         };
         OZONE.ajax.requestModule(null, params, () => EASYBAN.showSuccess('Member removed'));
       },
+    );
   },
 
   runBan: function(userId) {
