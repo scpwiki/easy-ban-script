@@ -92,7 +92,13 @@ const EASYBAN = {
     win.show();
   },
 
+  getUsername: function() {
+    const element = document.querySelector('h1.profile-title');
+    return element.innerText.trim();
+  },
+
   runRevoke: function(userId) {
+    const username = EASYBAN.getUsername();
     EASYBAN.showConfirm(
       'Revoke Membership',
       'Are you sure you want to revoke the user <strong>' + username + '</strong> (user ID ' + userId + ') and remove them from the site?',
@@ -119,9 +125,7 @@ const EASYBAN = {
       EASYBAN.showError('No ban reason provided');
     }
 
-    const usernameElement = document.querySelector('h1.profile-title');
-    const username = usernameElement.innerText.trim();
-
+    const username = EASYBAN.getUsername();
     EASYBAN.showConfirm(
       'Apply Ban',
       'Are you sure you want to ban the user <strong>' + username + '</strong> (user ID ' + userId + ') with reason:<br><code>' + EASYBAN.escapeHtml(reason) + '</code>',
