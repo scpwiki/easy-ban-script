@@ -130,6 +130,7 @@ const EASYBAN = {
       () => {
         EASYBAN.runBanInner(userId, reason);
         EASYBAN.showError('');
+        reasonElement.value = '';
       },
     );
   },
