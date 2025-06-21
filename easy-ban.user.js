@@ -176,7 +176,7 @@ function setup() {
   const scriptBlock = document.createElement('script');
   scriptBlock.type = 'text/javascript';
   scriptBlock.innerHTML = JS;
-  document.body.appendChild(scriptBlock);
+  document.head.appendChild(scriptBlock);
 
   // Build UI
   const fieldset = document.createElement('fieldset');
