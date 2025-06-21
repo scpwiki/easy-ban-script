@@ -104,7 +104,7 @@ const EASYBAN = {
     const username = EASYBAN.getUsername();
     EASYBAN.showConfirm(
       'Revoke Membership',
-      'Are you sure you want to 👢 <strong>revoke</strong> the user <strong>' + username + '</strong> (user ID ' + userId + ') and remove them from the site?',
+      'Are you sure you want to 👢 <strong style="color: teal">revoke</strong> the user <strong>' + username + '</strong> (user ID ' + userId + ') and remove them from the site?',
       async () => {
         await EASYBAN.runRevokeInner(userId);
         EASYBAN.showSuccess('Member removed')
@@ -127,7 +127,7 @@ const EASYBAN = {
     const username = EASYBAN.getUsername();
     EASYBAN.showConfirm(
       'Apply Ban',
-      'Are you sure you want to ❌ <strong>ban</strong> the user <strong>' + username + '</strong> (user ID ' + userId + ') with reason:<br><code>' + EASYBAN.escapeHtml(reason) + '</code>',
+      'Are you sure you want to ❌ <strong style="color: red">ban</strong> the user <strong>' + username + '</strong> (user ID ' + userId + ') with reason:<br><code>' + EASYBAN.escapeHtml(reason) + '</code>',
       async () => {
         await EASYBAN.runBanInner(userId, reason);
         EASYBAN.showSuccess('Ban added');
@@ -227,13 +227,13 @@ function setup() {
   const revokeButton = document.createElement('button');
   revokeButton.classList.add('can-lock');
   revokeButton.disabled = true;
-  revokeButton.innerText = '👢 Revoke';
+  revokeButton.innerText = 'Revoke';
   revokeButton.setAttribute('onclick', `EASYBAN.runRevoke(${userId})`);
 
   const banButton = document.createElement('button');
   banButton.classList.add('can-lock');
   banButton.disabled = true;
-  banButton.innerText = '❌ Ban';
+  banButton.innerText = 'Ban';
   banButton.setAttribute('onclick', `EASYBAN.runBan(${userId})`);
 
   const banReason = document.createElement('input');
