@@ -13,6 +13,8 @@
 // @updateURL   https://github.com/scpwiki/easy-ban-script/raw/main/user-info.user.js
 // @downloadURL https://github.com/scpwiki/easy-ban-script/raw/main/user-info.user.js
 // @include     https://scp-wiki.wikidot.com/system:user/*
+// @include     http://scp-sandbox-3.wikidot.com/system:user/*
+// @include     https://scp-sandbox-3.wikidot.com/system:user/*
 // @include     https://techcheck.wikidot.com/system:user/*
 // ==/UserScript==
 
