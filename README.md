@@ -26,7 +26,7 @@ Then click the action and a final confirmation will appear:
 
 ![screenshot of confirmation](screenshot-ban-confirmation.png)
 
-After carefully verifying that all the information is correct, then click the button to add the ban.
+After carefully verifying that all the information is correct, then click the button to add the ban. Note that this will remove the user's membership if they're still a member.
 
 Similarly for revokes:
 
