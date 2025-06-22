@@ -28,6 +28,10 @@ Then click the action and a final confirmation will appear:
 
 After carefully verifying that all the information is correct, then click the button to add the ban.
 
+Similarly for revokes:
+
+![screenshot of confirmation](screenshot-revoke-confirmation.png)
+
 ### Installation
 
 **You can [install the script](https://github.com/scpwiki/easy-ban-script/raw/main/easy-ban.user.js) here.**
