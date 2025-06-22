@@ -89,9 +89,9 @@ const EASYBAN = {
   showConfirm: function(actionName, content, callback) {
     const win = new OZONE.dialogs.ConfirmationDialog();
     win.content = content;
-    win.buttons = ['Cancel', actionName];
+    win.buttons = ['cancel', actionName];
     win.addButtonListener(actionName, callback);
-    win.addButtonListener('Cancel', win.close);
+    win.addButtonListener('cancel', win.close);
     win.show();
   },
 
