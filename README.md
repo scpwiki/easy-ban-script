@@ -24,7 +24,7 @@ Per SCP Wiki administrative guidelines, you should give a summary of the ban (e.
 
 Then click the action and a final confirmation will appear:
 
-![screenshot of confirmation](screenshot-confirmation.png)
+![screenshot of confirmation](screenshot-ban-confirmation.png)
 
 After carefully verifying that all the information is correct, then click the button to add the ban.
 
