@@ -1,5 +1,5 @@
 /*
- * Wikidot easy revoke/ban userscript
+ * Wikidot easy revoke/ban/promotion userscript
  *
  * For installation instructions, see https://05command.wikidot.com/user-scripts
  *
@@ -7,9 +7,9 @@
  */
 
 // ==UserScript==
-// @name        Wikidot easy revoke/ban script
-// @description Makes it easier for admins to revoke and ban users
-// @version     v0.2.0
+// @name        Wikidot easy revoke/ban/promotion script
+// @description Makes it easier for admins to revoke, ban, or promote users
+// @version     v0.3.0
 // @updateURL   https://github.com/scpwiki/easy-ban-script/raw/main/user-info.user.js
 // @downloadURL https://github.com/scpwiki/easy-ban-script/raw/main/user-info.user.js
 // @include     https://scp-wiki.wikidot.com/system:user/*
@@ -53,6 +53,39 @@ const CSS = `
 
 #easy-ban-userscript .danger-zone {
   border: 1px darkred solid;
+  padding: 0.75em;
+  margin: 0.5em;
+}
+
+#easy-promote-userscript {
+  border: 1px green solid;
+  padding: 0.5em;
+}
+
+#easy-promote-userscript legend {
+  font-weight: bold;
+}
+
+#easy-promote-userscript-error {
+  color: red;
+  font-weight: bold;
+}
+
+#easy-promote-userscript button {
+  display: inline-block;
+  padding: 5px 10px 5px 10px;
+  text-align: center;
+  color: #ffffff;
+  background-color: #20a020;
+  border-color: #3fd43a;
+}
+
+#easy-promote-userscript button:disabled {
+  filter: grayscale(1);
+}
+
+#easy-promote-userscript .danger-zone {
+  border: 1px green dashed;
   padding: 0.75em;
   margin: 0.5em;
 }
@@ -137,6 +170,30 @@ const EASYBAN = {
     );
   },
 
+  runGrantMod: function(userId) {
+    const username = EASYBAN.getUsername();
+    EASYBAN.showConfirm(
+      'Grant Moderator Permissions',
+      'Are you sure you want to give 🧰 <strong style="color: teal">give moderator tools</strong> to the user <strong>' + username + '</strong> (user ID ' + userId + ')?',
+      async () => {
+        await EASYBAN.runGrantModInner(userId);
+        EASYBAN.showSuccess('Permissions granted')
+      },
+    );
+  },
+
+  runGrantAdmin: function(userId) {
+    const username = EASYBAN.getUsername();
+    EASYBAN.showConfirm(
+      'Grant Admin Permissions',
+      'Are you sure you want to give 🧰 <strong style="color: teal">give administrator permissions</strong> to the user <strong>' + username + '</strong> (user ID ' + userId + ')?',
+      async () => {
+        await EASYBAN.runGrantAdminInner(userId);
+        EASYBAN.showSuccess('Permissions granted')
+      },
+    );
+  },
+
   runRevokeInner: function(userId) {
     return new Promise((resolve) => {
       const params = {
@@ -163,7 +220,33 @@ const EASYBAN = {
       OZONE.ajax.requestModule(null, params, resolve);
     });
   },
+
+  runGrantModInner: function(userId) {
+    return new Promise((resolve) => {
+      const params = {
+        action: 'ManageSiteMembershipAction',
+        event: 'toModerators',
+        user_id: userId,
+      };
+      OZONE.ajax.requestModule(null, params, resolve);
+    });
+  },
+
+  runGrantAdminInner: function(userId) {
+    return new Promise((resolve) => {
+      const params = {
+        action: 'ManageSiteMembershipAction',
+        event: 'toAdmins',
+        user_id: userId,
+      };
+      OZONE.ajax.requestModule(null, params, resolve);
+    });
+  },
+
 };
+
+
+
 `;
 
 function getUserId() {
@@ -185,7 +268,7 @@ function toggleDangerZone() {
   const checkbox = document.getElementById('easy-ban-userscript-lock');
   const disabled = checkbox.checked;
 
-  const elements = document.querySelectorAll('#easy-ban-userscript .can-lock');
+  const elements = document.querySelectorAll('#easy-ban-userscript .can-lock,#easy-promote-userscript .can-lock');
   for (let i = 0; i < elements.length; i++) {
     elements[i].disabled = disabled;
   }
@@ -208,10 +291,9 @@ function setup() {
 
   // Build UI
   const fieldset = document.createElement('fieldset');
-  fieldset.id = 'easy-ban-userscript';
 
   const legend = document.createElement('legend');
-  legend.innerText = 'Moderation';
+  fieldset.appendChild(legend);
 
   const lockContainer = document.createElement('div');
   lockContainer.classList.add('danger-zone');
@@ -226,34 +308,64 @@ function setup() {
   lockLabel.innerText = 'Lock Danger Zone';
   lockContainer.appendChild(lockLabel);
 
-  const revokeButton = document.createElement('button');
-  revokeButton.classList.add('can-lock');
-  revokeButton.disabled = true;
-  revokeButton.innerText = 'Revoke';
-  revokeButton.setAttribute('onclick', `EASYBAN.runRevoke(${userId})`);
+  fieldset.appendChild(lockContainer);
 
-  const banButton = document.createElement('button');
-  banButton.classList.add('can-lock');
-  banButton.disabled = true;
-  banButton.innerText = 'Ban';
-  banButton.setAttribute('onclick', `EASYBAN.runBan(${userId})`);
+  if (window.location.href.includes("#promotion"))
+  {
+    fieldset.id = 'easy-promote-userscript';
 
-  const banReason = document.createElement('input');
-  banReason.id = 'easy-ban-userscript-ban-reason';
-  banReason.classList.add('can-lock');
-  banReason.disabled = true;
-  banReason.type = 'text';
-  banReason.placeholder = 'Ban reason (required)';
+    legend.innerText = 'Promotion';
+
+    const modButton = document.createElement('button');
+    modButton.classList.add('can-lock');
+    modButton.disabled = true;
+    modButton.innerText = 'Grant Mod Perms';
+    modButton.setAttribute('onclick', `EASYBAN.runGrantMod(${userId})`);
+
+    fieldset.appendChild(modButton);
+
+    const adminButton = document.createElement('button');
+    adminButton.classList.add('can-lock');
+    adminButton.disabled = true;
+    adminButton.innerText = 'Grant Admin';
+    adminButton.setAttribute('onclick', `EASYBAN.runGrantAdmin(${userId})`);
+
+    fieldset.appendChild(adminButton);
+  }
+  else
+  {
+    fieldset.id = 'easy-ban-userscript';
+
+    legend.innerText = 'Moderation';
+
+    const revokeButton = document.createElement('button');
+    revokeButton.classList.add('can-lock');
+    revokeButton.disabled = true;
+    revokeButton.innerText = 'Revoke';
+    revokeButton.setAttribute('onclick', `EASYBAN.runRevoke(${userId})`);
+
+    const banButton = document.createElement('button');
+    banButton.classList.add('can-lock');
+    banButton.disabled = true;
+    banButton.innerText = 'Ban';
+    banButton.setAttribute('onclick', `EASYBAN.runBan(${userId})`);
+
+    const banReason = document.createElement('input');
+    banReason.id = 'easy-ban-userscript-ban-reason';
+    banReason.classList.add('can-lock');
+    banReason.disabled = true;
+    banReason.type = 'text';
+    banReason.placeholder = 'Ban reason (required)';
+
+    fieldset.appendChild(revokeButton);
+    fieldset.appendChild(banButton);
+    fieldset.appendChild(banReason);
+  }
 
   const errorText = document.createElement('div');
   errorText.id = 'easy-ban-userscript-error';
   errorText.classList.add('error-text');
 
-  fieldset.appendChild(legend);
-  fieldset.appendChild(lockContainer);
-  fieldset.appendChild(revokeButton);
-  fieldset.appendChild(banButton);
-  fieldset.appendChild(banReason);
   fieldset.appendChild(errorText);
 
   const parent = document.querySelector('.col-md-9');
