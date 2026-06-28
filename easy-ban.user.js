@@ -1,5 +1,5 @@
 /*
- * Wikidot easy revoke/ban/promotion userscript
+ * Wikidot easy revoke/ban userscript
  *
  * For installation instructions, see https://05command.wikidot.com/user-scripts
  *
@@ -7,9 +7,9 @@
  */
 
 // ==UserScript==
-// @name        Wikidot easy revoke/ban/promotion script
-// @description Makes it easier for admins to revoke, ban, or promote users
-// @version     v0.3.0
+// @name        Wikidot easy revoke/ban script
+// @description Makes it easier for admins to revoke and ban users
+// @version     v0.2.0
 // @updateURL   https://github.com/scpwiki/easy-ban-script/raw/main/user-info.user.js
 // @downloadURL https://github.com/scpwiki/easy-ban-script/raw/main/user-info.user.js
 // @include     https://scp-wiki.wikidot.com/system:user/*
@@ -57,21 +57,21 @@ const CSS = `
   margin: 0.5em;
 }
 
-#easy-promote-userscript {
+#easy-ban-userscript-promote {
   border: 1px green solid;
   padding: 0.5em;
 }
 
-#easy-promote-userscript legend {
+#easy-ban-userscript-promote legend {
   font-weight: bold;
 }
 
-#easy-promote-userscript-error {
+#easy-ban-userscript-promote-error {
   color: red;
   font-weight: bold;
 }
 
-#easy-promote-userscript button {
+#easy-ban-userscript-promote button {
   display: inline-block;
   padding: 5px 10px 5px 10px;
   text-align: center;
@@ -80,11 +80,11 @@ const CSS = `
   border-color: #3fd43a;
 }
 
-#easy-promote-userscript button:disabled {
+#easy-ban-userscript-promote button:disabled {
   filter: grayscale(1);
 }
 
-#easy-promote-userscript .danger-zone {
+#easy-ban-userscript-promote .danger-zone {
   border: 1px green dashed;
   padding: 0.75em;
   margin: 0.5em;
@@ -266,7 +266,7 @@ function toggleDangerZone() {
   const checkbox = document.getElementById('easy-ban-userscript-lock');
   const disabled = checkbox.checked;
 
-  const elements = document.querySelectorAll('#easy-ban-userscript .can-lock,#easy-promote-userscript .can-lock');
+  const elements = document.querySelectorAll('#easy-ban-userscript .can-lock,#easy-ban-userscript-promote .can-lock');
   for (let i = 0; i < elements.length; i++) {
     elements[i].disabled = disabled;
   }
@@ -310,7 +310,7 @@ function setup() {
 
   if (window.location.href.includes("#promotion"))
   {
-    fieldset.id = 'easy-promote-userscript';
+    fieldset.id = 'easy-ban-userscript-promote';
 
     legend.innerText = 'Promotion';
 
