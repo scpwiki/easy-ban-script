@@ -1,5 +1,5 @@
 /*
- * Wikidot easy revoke/ban userscript
+ * Wikidot easy revoke/ban/promotion userscript
  *
  * For installation instructions, see https://05command.wikidot.com/user-scripts
  *
@@ -7,9 +7,9 @@
  */
 
 // ==UserScript==
-// @name        Wikidot easy revoke/ban script
-// @description Makes it easier for admins to revoke and ban users
-// @version     v0.2.0
+// @name        Wikidot easy revoke/ban/promotion script
+// @description Makes it easier for admins to revoke, ban, or promote users
+// @version     v0.3.0
 // @updateURL   https://github.com/scpwiki/easy-ban-script/raw/main/user-info.user.js
 // @downloadURL https://github.com/scpwiki/easy-ban-script/raw/main/user-info.user.js
 // @include     https://scp-wiki.wikidot.com/system:user/*
