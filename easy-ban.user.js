@@ -186,7 +186,7 @@ const EASYBAN = {
     const username = EASYBAN.getUsername();
     EASYBAN.showConfirm(
       'Grant Admin Permissions',
-      'Are you sure you want to give 🧰 <strong style="color: teal">give administrator permissions</strong> to the user <strong>' + username + '</strong> (user ID ' + userId + ')?',
+      'Are you sure you want to give 🏰 <strong style="color: teal">give administrator permissions</strong> to the user <strong>' + username + '</strong> (user ID ' + userId + ')?',
       async () => {
         await EASYBAN.runGrantAdminInner(userId);
         EASYBAN.showSuccess('Permissions granted')
@@ -244,8 +244,6 @@ const EASYBAN = {
   },
 
 };
-
-
 
 `;
 
