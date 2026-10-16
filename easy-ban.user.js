@@ -9,7 +9,7 @@
 // ==UserScript==
 // @name        Wikidot easy revoke/ban/promotion script
 // @description Makes it easier for admins to revoke, ban, or promote users
-// @version     v0.3.0
+// @version     v0.3.1
 // @updateURL   https://github.com/scpwiki/easy-ban-script/raw/main/user-info.user.js
 // @downloadURL https://github.com/scpwiki/easy-ban-script/raw/main/user-info.user.js
 // @include     https://scp-wiki.wikidot.com/system:user/*
